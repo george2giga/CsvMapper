@@ -128,8 +128,36 @@ namespace CsvMapper
             {
                 PropertyInfo prop = type.GetProperty(csvFieldResult.FieldName);
                 var propertyType = prop.PropertyType;
-                var convertedValue = Convert.ChangeType(csvFieldResult.FieldValue, propertyType);
-                prop.SetValue(destinationObj, convertedValue, null);
+                if (propertyType == typeof(double?))
+                {
+                    //if(convertedValue == null)
+                    //{ }
+                    //try
+                    //{
+                    //    var propAsNullable = Convert.ToDouble(csvFieldResult.FieldValue);
+                    //    //var propAsNullable = ChangeType(csvFieldResult.FieldValue);
+                    //    var convertedValue = propAsNullable;
+                    //    prop.SetValue(destinationObj, convertedValue, null);
+                    //}
+                    try
+                    {
+                        var propAsNullable = ChangeType(csvFieldResult.FieldValue, propertyType);
+                        var convertedValue = propAsNullable;
+                        prop.SetValue(destinationObj, convertedValue, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        prop.SetValue(destinationObj, null, null);
+                    }
+                    //var convertedValue = propAsNullable;
+
+                }
+                else
+                {
+                    var convertedValue = Convert.ChangeType(csvFieldResult.FieldValue, propertyType);
+                    prop.SetValue(destinationObj, convertedValue, null);
+                }
+                
             }
             return destinationObj;
         }
@@ -165,6 +193,39 @@ namespace CsvMapper
             return memberExpression.Member;
         }
 
+        public static T ChangeType<T>(object value)
+        {
+            var t = typeof(T);
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                {
+                    return default(T);
+                }
+
+                t = Nullable.GetUnderlyingType(t);
+            }
+
+            return (T)Convert.ChangeType(value, t);
+        }
+
+        public static object ChangeType(object value, Type conversion)
+        {
+            var t = conversion;
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+
+                t = Nullable.GetUnderlyingType(t);
+            }
+
+            return Convert.ChangeType(value, t);
+        }
 
         #endregion
     }
