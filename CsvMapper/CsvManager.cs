@@ -35,41 +35,29 @@ namespace CsvMapper
             AutoSet = autoSetColumns;
         }
 
-        public CsvManager(string filePath, bool isFirstLineColumnName):this(filePath, isFirstLineColumnName,',', true){}
+
+        /// <summary>
+        /// Simple constructor, the CSV contains the header row, default separator is a comma and Autoset it set to true
+        /// </summary>
+        /// <param name="filePath">Full file path of the spreadsheet</param>
+        /// <param name="separator">Columns separator</param>
+        public CsvManager(string filePath, char separator = ','):this(filePath, true , separator, true){}
 
         #region Public methods
-        
-        /// <summary>
-        /// Setting fields for strings
-        /// </summary>
-        /// <param name="expression">Property to target</param>
-        /// <param name="position">CSV column position</param>
-        public void SetField(Expression<Func<T, string>> expression, int position)
-        {
-            var propertyMemberInfo = GetPropertyMemberInfo(expression);
-            RegisterFieldToMap(propertyMemberInfo, position);
-        }
 
-        /// <summary>
-        /// Setting fields for value types
-        /// </summary>
-        /// <param name="expression">Property to target</param>
-        /// <param name="position">CSV column position</param>
-        public void SetField(Expression<Func<T,ValueType>> expression, int position)
+        ///// <summary>
+        ///// Setting fields for each property
+        ///// </summary>
+        ///// <param name="expression">Property to target</param>
+        ///// <param name="position">CSV column position</param>
+        public void SetField(Expression<Func<T, Object>> expression, int position)
         {
-            var propertyMemberInfo = GetPropertyMemberInfo(expression);
-            RegisterFieldToMap(propertyMemberInfo, position);
-        }
-
-        /// <summary>
-        /// Setting fields for datetime
-        /// </summary>
-        /// <param name="expression">Property to target</param>
-        /// <param name="position">CSV column position</param>
-        public void SetField(Expression<Func<T, DateTime>> expression, int position)
-        {
-            var propertyMemberInfo = GetPropertyMemberInfo(expression);
-            RegisterFieldToMap(propertyMemberInfo, position);
+            //if Autoset is enabled then ignore the manual field mapping
+            if (!AutoSet)
+            {
+                var propertyMemberInfo = GetPropertyMemberInfo(expression);
+                RegisterFieldToMap(propertyMemberInfo, position);
+            }
         }
 
         /// <summary>
@@ -79,6 +67,13 @@ namespace CsvMapper
         public List<T> GetObjectList()
         {
             Reader = new CsvReader(FilePath, CsvFieldsToMap, DefaultSeparator, IsFirstLineColumnName);
+            //If enabled, execute Autoset
+            if (AutoSet)
+            {
+                var headerLine = Reader.GetHeaderColumn();
+                AutoSetPropertyFields(headerLine);
+            }
+
             var csvRows = GetRowsFromFile();
             var resultList = new List<T>(csvRows.Count);
             foreach (var csvRow in csvRows)
@@ -124,6 +119,33 @@ namespace CsvMapper
         #endregion
 
         #region Private methods
+
+        public void AutoSetPropertyFields(string headerLine)
+        {
+            if (IsFirstLineColumnName)
+            {
+                string[] columns = headerLine.Split(DefaultSeparator);
+                Type type = typeof(T);
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    var propName = columns[i].Replace(" ", string.Empty).Replace("\"", string.Empty);
+                    PropertyInfo prop = type.GetProperty(propName);
+                    if (prop != null)
+                    {
+                        CsvFieldsToMap.Add(new CsvFieldTarget()
+                        {
+                            FieldName = propName,
+                            Position = i
+                        });
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cannot autoset {0}", propName);
+                    }
+                }
+            }
+        }
+
 
         /// <summary>
         /// Creating a mapping object between the target class property and the CSV position

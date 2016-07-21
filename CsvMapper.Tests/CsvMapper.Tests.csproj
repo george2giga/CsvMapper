@@ -43,12 +43,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CsvManagerFixture.cs" />
-    <Compile Include="Property.cs" />
+    <Compile Include="Customer.cs" />
     <Compile Include="UsPresident.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TestFiles\Customer_data.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestFiles\USPresident_Wikipedia.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -58,9 +61,6 @@
       <Project>{7FC28527-6F66-4031-844E-81F895F8601D}</Project>
       <Name>CsvMapper</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TestFiles\NM_HOMECHECKER_FINAL_000030.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

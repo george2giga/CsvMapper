@@ -49,6 +49,21 @@ namespace CsvMapper
             return CsvRowsResult;
         }
 
+        /// <summary>
+        /// Returns the header row (containing the column names) when this is present and Autoset is true
+        /// </summary>
+        /// <returns>Header row</returns>
+        public string GetHeaderColumn()
+        {
+            string headerLine = string.Empty;
+            if (IsFirstLineColumnName)
+            {
+                headerLine = File.ReadLines(FilePath).First();
+            }
+
+            return headerLine;
+        }
+
         #endregion
 
         #region Private methods
