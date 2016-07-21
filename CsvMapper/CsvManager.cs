@@ -16,6 +16,8 @@ namespace CsvMapper
         public string FilePath { get; set; }
         private CsvReader Reader { get; set; }
         public bool IsFirstLineColumnName { get; private set; }
+        public bool AutoSet { get; private set; }
+
 
         /// <summary>
         /// CSV manager constructor expecting the CSV file path,  column separator and if there is a header in the file. 
@@ -23,16 +25,17 @@ namespace CsvMapper
         /// <param name="filePath">Path of the CSV file</param>
         /// <param name="isFirstLineColumnName">CSV column separator</param>
         /// <param name="separator">First line contains column names</param>
-        public CsvManager(string filePath, bool isFirstLineColumnName, char separator)
+        public CsvManager(string filePath, bool isFirstLineColumnName, char separator, bool autoSetColumns = false)
         {
             CsvFieldsToMap = new List<CsvFieldTarget>();
             //Setting default separator 
             DefaultSeparator = separator;
             IsFirstLineColumnName = isFirstLineColumnName;
             FilePath = filePath;
+            AutoSet = autoSetColumns;
         }
 
-        public CsvManager(string filePath, bool isFirstLineColumnName):this(filePath, isFirstLineColumnName,','){}
+        public CsvManager(string filePath, bool isFirstLineColumnName):this(filePath, isFirstLineColumnName,',', true){}
 
         #region Public methods
         
@@ -43,7 +46,8 @@ namespace CsvMapper
         /// <param name="position">CSV column position</param>
         public void SetField(Expression<Func<T, string>> expression, int position)
         {
-            GetAndSetFieldTarget(expression, position);
+            var propertyMemberInfo = GetPropertyMemberInfo(expression);
+            RegisterFieldToMap(propertyMemberInfo, position);
         }
 
         /// <summary>
@@ -53,7 +57,8 @@ namespace CsvMapper
         /// <param name="position">CSV column position</param>
         public void SetField(Expression<Func<T,ValueType>> expression, int position)
         {
-            GetAndSetFieldTarget(expression, position);
+            var propertyMemberInfo = GetPropertyMemberInfo(expression);
+            RegisterFieldToMap(propertyMemberInfo, position);
         }
 
         /// <summary>
@@ -63,9 +68,9 @@ namespace CsvMapper
         /// <param name="position">CSV column position</param>
         public void SetField(Expression<Func<T, DateTime>> expression, int position)
         {
-            GetAndSetFieldTarget(expression, position);
+            var propertyMemberInfo = GetPropertyMemberInfo(expression);
+            RegisterFieldToMap(propertyMemberInfo, position);
         }
-
 
         /// <summary>
         /// Retrieve the list of mapped objects
@@ -85,6 +90,37 @@ namespace CsvMapper
             return resultList;
         }
 
+        /// <summary>
+        /// Cast the property value to the provided type. Uses ChangeType underneath and it can cast Nullable types
+        /// </summary>
+        /// <param name="value">Property value</param>
+        /// <param name="conversion">Target type for the conversion</param>
+        /// <returns>Property value casted to the desired type</returns>
+        public static object ChangeType(object value, Type conversion)
+        {
+            var t = conversion;
+
+            //if value is empty (we are reading from a csv so it will be treated as a string first)
+            //and we are on a nullable field
+            //then convert it to null
+            if ((string)value == string.Empty)
+            {
+                value = GetDefaultValue(conversion);
+            }
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+
+                t = Nullable.GetUnderlyingType(t);
+            }
+
+            return Convert.ChangeType(value, t);
+        }
+
         #endregion
 
         #region Private methods
@@ -94,12 +130,16 @@ namespace CsvMapper
         /// </summary>
         /// <param name="expression">Target property</param>
         /// <param name="position">CSV column position</param>
-        private void GetAndSetFieldTarget(Expression expression, int position)
+        private MemberInfo GetPropertyMemberInfo(Expression expression)
         {
-            var property = GetMemberInfo(expression);
+             return GetMemberInfo(expression);
+        }
+
+        private void RegisterFieldToMap(MemberInfo propertyInfo, int position)
+        {
             CsvFieldsToMap.Add(new CsvFieldTarget()
             {
-                FieldName = property.Name,
+                FieldName = propertyInfo.Name,
                 Position = position
             });
         }
@@ -128,40 +168,11 @@ namespace CsvMapper
             {
                 PropertyInfo prop = type.GetProperty(csvFieldResult.FieldName);
                 var propertyType = prop.PropertyType;
-                if (propertyType == typeof(double?))
-                {
-                    //if(convertedValue == null)
-                    //{ }
-                    //try
-                    //{
-                    //    var propAsNullable = Convert.ToDouble(csvFieldResult.FieldValue);
-                    //    //var propAsNullable = ChangeType(csvFieldResult.FieldValue);
-                    //    var convertedValue = propAsNullable;
-                    //    prop.SetValue(destinationObj, convertedValue, null);
-                    //}
-                    try
-                    {
-                        var propAsNullable = ChangeType(csvFieldResult.FieldValue, propertyType);
-                        var convertedValue = propAsNullable;
-                        prop.SetValue(destinationObj, convertedValue, null);
-                    }
-                    catch (Exception ex)
-                    {
-                        prop.SetValue(destinationObj, null, null);
-                    }
-                    //var convertedValue = propAsNullable;
-
-                }
-                else
-                {
-                    var convertedValue = Convert.ChangeType(csvFieldResult.FieldValue, propertyType);
-                    prop.SetValue(destinationObj, convertedValue, null);
-                }
-                
+                var convertedValue = ChangeType(csvFieldResult.FieldValue, propertyType);
+                prop.SetValue(destinationObj, convertedValue, null);
             }
             return destinationObj;
         }
-
 
         /// <summary>
         /// Check the type of expression and returns the member (property).
@@ -193,38 +204,12 @@ namespace CsvMapper
             return memberExpression.Member;
         }
 
-        public static T ChangeType<T>(object value)
+        private static object GetDefaultValue(Type t)
         {
-            var t = typeof(T);
+            if (t.IsValueType)
+                return Activator.CreateInstance(t);
 
-            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-            {
-                if (value == null)
-                {
-                    return default(T);
-                }
-
-                t = Nullable.GetUnderlyingType(t);
-            }
-
-            return (T)Convert.ChangeType(value, t);
-        }
-
-        public static object ChangeType(object value, Type conversion)
-        {
-            var t = conversion;
-
-            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-            {
-                if (value == null)
-                {
-                    return null;
-                }
-
-                t = Nullable.GetUnderlyingType(t);
-            }
-
-            return Convert.ChangeType(value, t);
+            return null;
         }
 
         #endregion
