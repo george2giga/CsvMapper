@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvMapper", "CsvMapper\CsvM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvMapper.Tests", "CsvMapper.Tests\CsvMapper.Tests.csproj", "{8B86839A-5D7C-4600-883F-C5759388C234}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{1FCD02BD-FE6D-46B1-BC4C-FAB8597F9815}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{12BD757D-CFA2-4A57-A713-5D30DB01A747}"
 	ProjectSection(SolutionItems) = preProject
-		C:\Users\minardg\Desktop\CsvMapper.1.0.0.nupkg = C:\Users\minardg\Desktop\CsvMapper.1.0.0.nupkg
+		NugetPackage\CsvMapper.1.0.0.nupkg = NugetPackage\CsvMapper.1.0.0.nupkg
 	EndProjectSection
 EndProject
 Global
