@@ -103,7 +103,7 @@ namespace CsvMapper
                 value = GetDefaultValue(conversion);
             }
 
-            if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 if (value == null)
                 {
