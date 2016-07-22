@@ -1,9 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvMapper", "CsvMapper\CsvMapper.csproj", "{7FC28527-6F66-4031-844E-81F895F8601D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvMapper.Tests", "CsvMapper.Tests\CsvMapper.Tests.csproj", "{8B86839A-5D7C-4600-883F-C5759388C234}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{1FCD02BD-FE6D-46B1-BC4C-FAB8597F9815}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\minardg\Desktop\CsvMapper.1.0.0.nupkg = C:\Users\minardg\Desktop\CsvMapper.1.0.0.nupkg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
