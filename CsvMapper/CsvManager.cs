@@ -25,6 +25,7 @@ namespace CsvMapper
         /// <param name="filePath">Path of the CSV file</param>
         /// <param name="isFirstLineColumnName">CSV column separator</param>
         /// <param name="separator">First line contains column names</param>
+        /// <param name="autoSetColumns">Infer column names and automatically map them to object properties</param>
         public CsvManager(string filePath, bool isFirstLineColumnName, char separator, bool autoSetColumns = false)
         {
             CsvFieldsToMap = new List<CsvFieldTarget>();
