@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CsvManagerFixture.cs" />
+    <Compile Include="CsvMapFixture.cs" />
     <Compile Include="Customer.cs" />
+    <Compile Include="GalaxyElement.cs" />
     <Compile Include="UsPresident.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

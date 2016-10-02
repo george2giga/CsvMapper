@@ -121,6 +121,7 @@ namespace CsvMapper
 
         #region Private methods
 
+
         public void AutoSetPropertyFields(string headerLine)
         {
             if (IsFirstLineColumnName)
