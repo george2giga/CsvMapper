@@ -18,7 +18,7 @@ namespace CsvMapper
         private readonly bool _firstLineHeader;
         private readonly char _separator;
 
-        public List<CsvFieldTarget> CsvFieldsToMap { get; private set; }
+        public Dictionary<string,int> MappingDictionary{ get; private set; }
 
         /// <summary>
         /// Initialize class with AutoSet and infer class mapping from the spreadsheet first row (header).
@@ -31,7 +31,7 @@ namespace CsvMapper
         /// <param name="autoSet"></param>
         public CsvMap(string filePath, bool isFirstLineHeader = true, char separator = ',', bool autoSet = false)
         {
-            if (string.IsNullOrEmpty(_filePath))
+            if (string.IsNullOrEmpty(filePath))
             {
                 throw new NullReferenceException("Missing csv source filepath");
             }
@@ -40,7 +40,7 @@ namespace CsvMapper
                 throw new FileNotFoundException(string.Format("File not found: {0} ", filePath));
             }
 
-            CsvFieldsToMap = new List<CsvFieldTarget>();
+            MappingDictionary = new Dictionary<string, int>();
             _filePath = filePath;
             _separator = separator;
             _autoSet = autoSet;
@@ -80,15 +80,11 @@ namespace CsvMapper
         {
             var propertyName = CsvMapperReflectionUtils.GetPropertyName(propertyToMap);
             // remove the property from the mapping list if it already exists
-            if (CsvFieldsToMap.Exists(x => x.FieldName == propertyName))
+            if (MappingDictionary.Any(x => x.Key == propertyName))
             {
-                CsvFieldsToMap.RemoveAll(x => x.FieldName == propertyName);
+                MappingDictionary.Remove(propertyName);
             }
-            CsvFieldsToMap.Add(new CsvFieldTarget()
-            {
-                FieldName = propertyName,
-                Position = position
-            });
+            MappingDictionary.Add(propertyName, position);
 
             return this;
         }
@@ -112,7 +108,7 @@ namespace CsvMapper
                 while ((line = readFile.ReadLine()) != null)
                 {
                     string[] row = line.Split(_separator);
-                    var resultRow = CsvMapperReflectionUtils.SetPropertiesViaReflection<T>(row, CsvFieldsToMap);
+                    var resultRow = CsvMapperReflectionUtils.SetPropertiesViaReflection<T>(row, MappingDictionary);
                     yield return resultRow;
                 }
             }
@@ -133,11 +129,7 @@ namespace CsvMapper
                 //Add property name and position to the mapping
                 if (prop != null)
                 {
-                    CsvFieldsToMap.Add(new CsvFieldTarget()
-                    {
-                        FieldName = prop.Name,
-                        Position = i
-                    });
+                    MappingDictionary.Add(prop.Name,i);
                 }
                 else
                 {

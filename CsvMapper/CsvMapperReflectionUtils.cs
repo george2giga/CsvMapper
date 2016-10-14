@@ -16,15 +16,15 @@ namespace CsvMapper
         /// <param name="destinationObj">Destination object</param>
         /// <param name="csvRow">CSV row to map</param>
         /// <returns>Object mapped</returns>
-        public static T SetPropertiesViaReflection<T>(string[] row, List<CsvFieldTarget> csvFieldTarget) where T : new()
+        public static T SetPropertiesViaReflection<T>(string[] row, Dictionary<string,int> mappingDictionary) where T : new()
         {
             var destinationObject = new T();
             Type type = destinationObject.GetType();
-            foreach (var fieldMappings in csvFieldTarget)
+            foreach (var fieldMappings in mappingDictionary)
             {
-                PropertyInfo prop = type.GetProperty(fieldMappings.FieldName);
+                PropertyInfo prop = type.GetProperty(fieldMappings.Key);
                 var propertyType = prop.PropertyType;
-                var convertedValue = ChangeType(row[fieldMappings.Position], propertyType);
+                var convertedValue = ChangeType(row[fieldMappings.Value], propertyType);
                 prop.SetValue(destinationObject, convertedValue, null);
             }
             return destinationObject;

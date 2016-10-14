@@ -28,7 +28,7 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Us_Presidents_Test()
         {
-            var presidentsManager = new CsvMap<UsPresident>(_presidentsfullFilePath, true)
+            var presidentsManager = new CsvMap<UsPresident>(_presidentsfullFilePath)
                 .SetField(x => x.PresidencyId, 0)
                 .SetField(x => x.President, 1)
                 .SetField(x => x.WikipediaEntry, 2)
@@ -48,7 +48,7 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Galaxy_Elements_Test()
         {
-            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true);
+            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true,',', true);
 
             galaxyElementsMap
                 .SetField(x => x.Right_Ascension, 1);
@@ -57,7 +57,7 @@ namespace CsvMapper.Tests
 
             using (StreamWriter file = new StreamWriter(@"C:\tempdev\WriteLines2.txt"))
             {
-                foreach (var galaxyElement in result)
+                foreach (var galaxyElement in result.Take(1000))
                 {
                     //Console.WriteLine(galaxyElement.ObjectId);
                     file.WriteLine(galaxyElement.ObjectId);
@@ -73,7 +73,7 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Galaxy_Elements_Test_Print_First_Ten_Records()
         {
-            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true);
+            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true, ',', true);
 
             galaxyElementsMap
                 .SetField(x => x.Right_Ascension, 1);
