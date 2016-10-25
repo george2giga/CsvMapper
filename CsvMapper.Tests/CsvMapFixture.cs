@@ -91,5 +91,16 @@ namespace CsvMapper.Tests
             Assert.IsNotNull(result);
             //Assert.IsTrue(result.Any());
         }
+
+        [Test]
+        public void Load_Customer_Test_No_Autoset()
+        {
+            var customersManager = new CsvMap<Customer>(_customersfullFilePath, true, ',', true);
+
+            var customersResult = customersManager.Load().ToList();
+
+            Assert.IsNotNull(customersResult);
+            Assert.IsTrue(customersResult.Count > 0);
+        }
     }
 }

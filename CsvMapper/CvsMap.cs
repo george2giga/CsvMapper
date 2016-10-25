@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CsvMapper
 {
@@ -18,12 +13,12 @@ namespace CsvMapper
         private readonly bool _firstLineHeader;
         private readonly char _separator;
 
-        public Dictionary<string,int> MappingDictionary{ get; private set; }
+        public Dictionary<string, int> MappingDictionary { get; }
 
         /// <summary>
-        /// Initialize class with AutoSet and infer class mapping from the spreadsheet first row (header).
-        /// First line is 
-        /// Default separator is ','
+        ///     Initialize class with AutoSet and infer class mapping from the spreadsheet first row (header).
+        ///     First line is
+        ///     Default separator is ','
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="isFirstLineHeader"></param>
@@ -35,7 +30,7 @@ namespace CsvMapper
             {
                 throw new NullReferenceException("Missing csv source filepath");
             }
-            else if (!File.Exists(filePath))
+            if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException(string.Format("File not found: {0} ", filePath));
             }
@@ -55,9 +50,7 @@ namespace CsvMapper
             {
                 _firstLineHeader = isFirstLineHeader;
             }
-
         }
-
 
         private void InitializeAutoSet()
         {
@@ -67,10 +60,9 @@ namespace CsvMapper
                 AutoSetPropertyFields(headerLine);
             }
         }
-       
 
         /// <summary>
-        /// Define the mapping between the class property and its position in the file
+        ///     Defines the mapping between the class property and its position in the file
         /// </summary>
         /// <param name="propertyToMap">Propery to map</param>
         /// <param name="position">Position of the property field in the csv file (ie: 1 is the first column)</param>
@@ -89,7 +81,7 @@ namespace CsvMapper
         }
 
         /// <summary>
-        /// Removes a property from the mapping list
+        ///     Removes a property from the mapping list
         /// </summary>
         /// <param name="propertyToRemove">Property name to remove</param>
         /// <returns>Mapper instance with deleted property</returns>
@@ -107,7 +99,7 @@ namespace CsvMapper
 
 
         /// <summary>
-        /// Get an iterator over the csv file
+        ///     Get an iterator over the csv file
         /// </summary>
         /// <returns>Iterator over the CSV lines</returns>
         public IEnumerable<T> Load()
@@ -123,7 +115,7 @@ namespace CsvMapper
 
                 while ((line = readFile.ReadLine()) != null)
                 {
-                    string[] row = line.Split(_separator);
+                    var row = line.Split(_separator);
                     var resultRow = CsvMapperReflectionUtils.SetPropertiesViaReflection<T>(row, MappingDictionary);
                     yield return resultRow;
                 }
@@ -131,13 +123,13 @@ namespace CsvMapper
         }
 
         /// <summary>
-        /// Autoset the csv fields (case insensitive) from the header line
+        ///     Autoset the csv fields (case insensitive) from the header line
         /// </summary>
         /// <param name="headerLine">File header line</param>
         private void AutoSetPropertyFields(string headerLine)
         {
-            string[] columns = headerLine.Split(this._separator);
-            for (int i = 0; i < columns.Length; i++)
+            var columns = headerLine.Split(_separator);
+            for (var i = 0; i < columns.Length; i++)
             {
                 var propName = columns[i].Replace(" ", string.Empty).Replace("\"", string.Empty);
                 // checks if the autoset property (coming from the header) is a valid property of T

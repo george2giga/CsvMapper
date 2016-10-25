@@ -39,10 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CsvManager.cs" />
     <Compile Include="CsvMapperReflectionUtils.cs" />
-    <Compile Include="CsvModels.cs" />
-    <Compile Include="CsvReader.cs" />
     <Compile Include="CvsMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
