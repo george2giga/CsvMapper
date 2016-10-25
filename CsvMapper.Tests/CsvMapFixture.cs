@@ -48,7 +48,10 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Galaxy_Elements_Test()
         {
-            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true,',', true);
+            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", new CsvMapperConfiguration()
+            {
+                AutoSet = true
+            });
 
             galaxyElementsMap
                 .SetField(x => x.Right_Ascension, 1);
@@ -73,7 +76,11 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Galaxy_Elements_Test_Print_First_Ten_Records()
         {
-            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true, ',', true);
+            //var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true, ',', true);
+            var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", new CsvMapperConfiguration()
+            {
+                AutoSet = true
+            });
 
             galaxyElementsMap
                 .SetField(x => x.Right_Ascension, 1);
@@ -95,7 +102,10 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Customer_Test_No_Autoset()
         {
-            var customersManager = new CsvMap<Customer>(_customersfullFilePath, true, ',', true);
+            var customersManager = new CsvMap<Customer>(_customersfullFilePath, new CsvMapperConfiguration()
+            {
+                AutoSet = true
+            });
 
             var customersResult = customersManager.Load().ToList();
 

@@ -8,10 +8,8 @@ namespace CsvMapper
 {
     public class CsvMap<T> where T : new()
     {
-        private readonly bool _autoSet;
-        private readonly string _filePath;
-        private readonly bool _firstLineHeader;
-        private readonly char _separator;
+        private string _filePath;
+        public CsvMapperConfiguration CsvMapperConfiguration { get; private set; }
 
         public Dictionary<string, int> MappingDictionary { get; }
 
@@ -20,11 +18,25 @@ namespace CsvMapper
         ///     First line is
         ///     Default separator is ','
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="isFirstLineHeader"></param>
-        /// <param name="separator"></param>
-        /// <param name="autoSet"></param>
-        public CsvMap(string filePath, bool isFirstLineHeader = true, char separator = ',', bool autoSet = false)
+        public CsvMap(string filePath)
+        {
+            ValidateFilePath(filePath);
+            _filePath = filePath;
+            MappingDictionary = new Dictionary<string, int>();
+        }
+
+        public CsvMap(string filePath, CsvMapperConfiguration csvMapperConfiguration) : this(filePath)
+        {
+            CsvMapperConfiguration = csvMapperConfiguration;
+            if (CsvMapperConfiguration.AutoSet)
+            {
+                InitializeAutoSet();
+                // The first line contains the header if autoset is set to true
+                CsvMapperConfiguration.FirstLineHeader = true;
+            }
+        }
+
+        private void ValidateFilePath(string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -33,22 +45,6 @@ namespace CsvMapper
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException(string.Format("File not found: {0} ", filePath));
-            }
-
-            MappingDictionary = new Dictionary<string, int>();
-            _filePath = filePath;
-            _separator = separator;
-            _autoSet = autoSet;
-
-            if (_autoSet)
-            {
-                InitializeAutoSet();
-                // The first line contains the header if autoset is set to true
-                _firstLineHeader = true;
-            }
-            else
-            {
-                _firstLineHeader = isFirstLineHeader;
             }
         }
 
@@ -107,7 +103,7 @@ namespace CsvMapper
             using (var readFile = new StreamReader(_filePath))
             {
                 // if first line is header or autoset is true then skip the first line
-                if (_firstLineHeader || _autoSet)
+                if (CsvMapperConfiguration.FirstLineHeader || CsvMapperConfiguration.AutoSet)
                 {
                     readFile.ReadLine();
                 }
@@ -115,7 +111,7 @@ namespace CsvMapper
 
                 while ((line = readFile.ReadLine()) != null)
                 {
-                    var row = line.Split(_separator);
+                    var row = line.Split(CsvMapperConfiguration.Separator);
                     var resultRow = CsvMapperReflectionUtils.SetPropertiesViaReflection<T>(row, MappingDictionary);
                     yield return resultRow;
                 }
@@ -128,7 +124,7 @@ namespace CsvMapper
         /// <param name="headerLine">File header line</param>
         private void AutoSetPropertyFields(string headerLine)
         {
-            var columns = headerLine.Split(_separator);
+            var columns = headerLine.Split(CsvMapperConfiguration.Separator);
             for (var i = 0; i < columns.Length; i++)
             {
                 var propName = columns[i].Replace(" ", string.Empty).Replace("\"", string.Empty);

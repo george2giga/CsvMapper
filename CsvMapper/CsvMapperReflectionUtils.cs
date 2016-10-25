@@ -91,6 +91,11 @@ namespace CsvMapper
                 value = GetDefaultValue(conversion);
             }
 
+            if (value == null)
+            {
+                return null;
+            }
+
             //and we are on a nullable field
             //then convert it to null
             if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))

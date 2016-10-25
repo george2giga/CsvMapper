@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CsvMapperConfiguration.cs" />
     <Compile Include="CsvMapperReflectionUtils.cs" />
     <Compile Include="CvsMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
