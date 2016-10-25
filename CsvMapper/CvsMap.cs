@@ -8,7 +8,7 @@ namespace CsvMapper
 {
     public class CsvMap<T> where T : new()
     {
-        private string _filePath;
+        private readonly string _filePath;
         public CsvMapperConfiguration CsvMapperConfiguration { get; private set; }
 
         public Dictionary<string, int> MappingDictionary { get; }
@@ -23,6 +23,7 @@ namespace CsvMapper
             ValidateFilePath(filePath);
             _filePath = filePath;
             MappingDictionary = new Dictionary<string, int>();
+            CsvMapperConfiguration = new CsvMapperConfiguration();
         }
 
         public CsvMap(string filePath, CsvMapperConfiguration csvMapperConfiguration) : this(filePath)
