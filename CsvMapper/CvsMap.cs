@@ -48,6 +48,7 @@ namespace CsvMapper
             if (_autoSet)
             {
                 InitializeAutoSet();
+                // The first line contains the header if autoset is set to true
                 _firstLineHeader = true;
             }
             else
@@ -66,8 +67,6 @@ namespace CsvMapper
                 AutoSetPropertyFields(headerLine);
             }
         }
-
-
        
 
         /// <summary>
@@ -78,7 +77,7 @@ namespace CsvMapper
         /// <returns>Mapper Instance with field set</returns>
         public CsvMap<T> SetField(Expression<Func<T, object>> propertyToMap, int position)
         {
-            var propertyName = CsvMapperReflectionUtils.GetPropertyName(propertyToMap);
+            var propertyName = CsvMapperReflectionUtils.GetPropertyNameFromExpression(propertyToMap);
             // remove the property from the mapping list if it already exists
             if (MappingDictionary.Any(x => x.Key == propertyName))
             {
@@ -89,7 +88,24 @@ namespace CsvMapper
             return this;
         }
 
-      
+        /// <summary>
+        /// Removes a property from the mapping list
+        /// </summary>
+        /// <param name="propertyToRemove">Property name to remove</param>
+        /// <returns>Mapper instance with deleted property</returns>
+        public CsvMap<T> RemoveFieldFromMapping(Expression<Func<T, object>> propertyToRemove)
+        {
+            var propertyName = CsvMapperReflectionUtils.GetPropertyNameFromExpression(propertyToRemove);
+            // remove the property from the mapping list if it already exists
+            if (MappingDictionary.Any(x => x.Key == propertyName))
+            {
+                MappingDictionary.Remove(propertyName);
+            }
+
+            return this;
+        }
+
+
         /// <summary>
         /// Get an iterator over the csv file
         /// </summary>
@@ -121,15 +137,15 @@ namespace CsvMapper
         private void AutoSetPropertyFields(string headerLine)
         {
             string[] columns = headerLine.Split(this._separator);
-            Type type = typeof(T);
             for (int i = 0; i < columns.Length; i++)
             {
                 var propName = columns[i].Replace(" ", string.Empty).Replace("\"", string.Empty);
-                PropertyInfo prop = type.GetProperty(propName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                //Add property name and position to the mapping
-                if (prop != null)
+                // checks if the autoset property (coming from the header) is a valid property of T
+                var propertyNameFound = CsvMapperReflectionUtils.GetPropertyName<T>(propName);
+                // Add property name and position to the mapping
+                if (!string.IsNullOrEmpty(propertyNameFound))
                 {
-                    MappingDictionary.Add(prop.Name,i);
+                    MappingDictionary.Add(propertyNameFound, i);
                 }
                 else
                 {
