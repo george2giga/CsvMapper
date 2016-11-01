@@ -8,10 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvMapper.Tests", "CsvMapper.Tests\CsvMapper.Tests.csproj", "{8B86839A-5D7C-4600-883F-C5759388C234}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{12BD757D-CFA2-4A57-A713-5D30DB01A747}"
-	ProjectSection(SolutionItems) = preProject
-		NugetPackage\CsvMapper.1.0.0.nupkg = NugetPackage\CsvMapper.1.0.0.nupkg
-		docs\index.html = docs\index.html
-	EndProjectSection
+EndProject
+Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "CsvMapper.2.0.0", "NugetPackage\CsvMapper.2.0.0\CsvMapper.2.0.0.nuproj", "{A82244BC-A23C-4558-91CF-080D81A0909E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +25,10 @@ Global
 		{8B86839A-5D7C-4600-883F-C5759388C234}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B86839A-5D7C-4600-883F-C5759388C234}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B86839A-5D7C-4600-883F-C5759388C234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A82244BC-A23C-4558-91CF-080D81A0909E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A82244BC-A23C-4558-91CF-080D81A0909E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A82244BC-A23C-4558-91CF-080D81A0909E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A82244BC-A23C-4558-91CF-080D81A0909E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -41,7 +41,7 @@
   <ItemGroup>
     <Compile Include="CsvMapperConfiguration.cs" />
     <Compile Include="CsvMapperReflectionUtils.cs" />
-    <Compile Include="CvsMap.cs" />
+    <Compile Include="CvsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

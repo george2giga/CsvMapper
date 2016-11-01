@@ -6,19 +6,17 @@ using System.Linq.Expressions;
 
 namespace CsvMapper
 {
-    public class CsvMap<T> where T : new()
+    public class CsvManager<T> where T : new()
     {
         private readonly string _filePath;
         public CsvMapperConfiguration CsvMapperConfiguration { get; private set; }
-
         public Dictionary<string, int> MappingDictionary { get; }
 
         /// <summary>
-        ///     Initialize class with AutoSet and infer class mapping from the spreadsheet first row (header).
-        ///     First line is
-        ///     Default separator is ','
+        ///     Initialize class a mapper class with Autoset = false, FirstLineHeader = false and default separator is ','
         /// </summary>
-        public CsvMap(string filePath)
+        /// <param name="filePath">Spreadsheet file path</param>
+        public CsvManager(string filePath)
         {
             ValidateFilePath(filePath);
             _filePath = filePath;
@@ -26,7 +24,12 @@ namespace CsvMapper
             CsvMapperConfiguration = new CsvMapperConfiguration();
         }
 
-        public CsvMap(string filePath, CsvMapperConfiguration csvMapperConfiguration) : this(filePath)
+        /// <summary>
+        ///     Initialize class a mapper class and accepts a CsvMapperConfiguration (with separator, autoset etc)
+        /// </summary>
+        /// <param name="filePath">Spreadsheet file path</param>
+        /// <param name="csvMapperConfiguration">Mapper configuration settings (separator, header on first line, autoset) (</param>
+        public CsvManager(string filePath, CsvMapperConfiguration csvMapperConfiguration) : this(filePath)
         {
             CsvMapperConfiguration = csvMapperConfiguration;
             if (CsvMapperConfiguration.AutoSet)
@@ -64,7 +67,7 @@ namespace CsvMapper
         /// <param name="propertyToMap">Propery to map</param>
         /// <param name="position">Position of the property field in the csv file (ie: 1 is the first column)</param>
         /// <returns>Mapper Instance with field set</returns>
-        public CsvMap<T> SetField(Expression<Func<T, object>> propertyToMap, int position)
+        public CsvManager<T> SetField(Expression<Func<T, object>> propertyToMap, int position)
         {
             var propertyName = CsvMapperReflectionUtils.GetPropertyNameFromExpression(propertyToMap);
             // remove the property from the mapping list if it already exists
@@ -82,7 +85,7 @@ namespace CsvMapper
         /// </summary>
         /// <param name="propertyToRemove">Property name to remove</param>
         /// <returns>Mapper instance with deleted property</returns>
-        public CsvMap<T> RemoveFieldFromMapping(Expression<Func<T, object>> propertyToRemove)
+        public CsvManager<T> RemoveFieldFromMapping(Expression<Func<T, object>> propertyToRemove)
         {
             var propertyName = CsvMapperReflectionUtils.GetPropertyNameFromExpression(propertyToRemove);
             // remove the property from the mapping list if it already exists
@@ -138,7 +141,7 @@ namespace CsvMapper
                 }
                 else
                 {
-                    //we don't want to throw an exception if a column cannot be set.
+                    // we don't want to throw an exception if a column cannot be set.
                     Console.WriteLine("Cannot autoset {0}", propName);
                 }
             }

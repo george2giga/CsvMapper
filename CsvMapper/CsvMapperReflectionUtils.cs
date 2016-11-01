@@ -33,6 +33,7 @@ namespace CsvMapper
                 var convertedValue = ChangeType(row[fieldMappings.Value], propertyType);
                 prop.SetValue(destinationObject, convertedValue, null);
             }
+
             return destinationObject;
         }
 
