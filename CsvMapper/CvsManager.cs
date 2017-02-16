@@ -8,30 +8,20 @@ namespace CsvMapper
 {
     public class CsvManager<T> where T : new()
     {
-        private readonly string _filePath;
-        public CsvMapperConfiguration CsvMapperConfiguration { get; private set; }
+        public CsvMapperConfiguration CsvMapperConfiguration { get; }
         public Dictionary<string, int> MappingDictionary { get; }
-
-        /// <summary>
-        ///     Initialize class a mapper class with Autoset = false, FirstLineHeader = false and default separator is ','
-        /// </summary>
-        /// <param name="filePath">Spreadsheet file path</param>
-        public CsvManager(string filePath)
-        {
-            ValidateFilePath(filePath);
-            _filePath = filePath;
-            MappingDictionary = new Dictionary<string, int>();
-            CsvMapperConfiguration = new CsvMapperConfiguration();
-        }
 
         /// <summary>
         ///     Initialize class a mapper class and accepts a CsvMapperConfiguration (with separator, autoset etc)
         /// </summary>
-        /// <param name="filePath">Spreadsheet file path</param>
-        /// <param name="csvMapperConfiguration">Mapper configuration settings (separator, header on first line, autoset) (</param>
-        public CsvManager(string filePath, CsvMapperConfiguration csvMapperConfiguration) : this(filePath)
+        /// <param name="csvMapperConfiguration">Mapper configuration settings (file path, separator, header on first line, autoset) (</param>
+        public CsvManager(CsvMapperConfiguration csvMapperConfiguration)
         {
             CsvMapperConfiguration = csvMapperConfiguration;
+
+            //// check if file is valid
+            ValidateFilePath();
+
             if (CsvMapperConfiguration.AutoSet)
             {
                 InitializeAutoSet();
@@ -40,21 +30,21 @@ namespace CsvMapper
             }
         }
 
-        private void ValidateFilePath(string filePath)
+        private void ValidateFilePath()
         {
-            if (string.IsNullOrEmpty(filePath))
+            if (string.IsNullOrEmpty(CsvMapperConfiguration.FilePath))
             {
                 throw new NullReferenceException("Missing csv source filepath");
             }
-            if (!File.Exists(filePath))
+            if (!File.Exists(CsvMapperConfiguration.FilePath))
             {
-                throw new FileNotFoundException(string.Format("File not found: {0} ", filePath));
+                throw new FileNotFoundException(string.Format("File not found: {0} ", CsvMapperConfiguration.FilePath));
             }
         }
 
         private void InitializeAutoSet()
         {
-            using (var readFile = new StreamReader(_filePath))
+            using (var readFile = new StreamReader(CsvMapperConfiguration.FilePath))
             {
                 var headerLine = readFile.ReadLine();
                 AutoSetPropertyFields(headerLine);
@@ -104,7 +94,7 @@ namespace CsvMapper
         /// <returns>Iterator over the CSV lines</returns>
         public IEnumerable<T> Load()
         {
-            using (var readFile = new StreamReader(_filePath))
+            using (var readFile = new StreamReader(CsvMapperConfiguration.FilePath))
             {
                 // if first line is header or autoset is true then skip the first line
                 if (CsvMapperConfiguration.FirstLineHeader || CsvMapperConfiguration.AutoSet)

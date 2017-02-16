@@ -10,7 +10,6 @@ namespace CsvMapper
 {
     public class CsvMapperReflectionUtils
     {
-      
         /// <summary>
         /// Creates and instance of the destination class from a csv row and the defined property mapping.
         /// </summary>

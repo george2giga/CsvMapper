@@ -28,7 +28,12 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Us_Presidents_Test()
         {
-            var presidentsManager = new CsvManager<UsPresident>(_presidentsfullFilePath, new CsvMapperConfiguration() { AutoSet = false , FirstLineHeader = true })
+            var presidentsManager = new CsvManager<UsPresident>(new CsvMapperConfiguration()
+            {
+                FilePath = _presidentsfullFilePath,
+                AutoSet = false,
+                FirstLineHeader = true
+            })
                 .SetField(x => x.PresidencyId, 0)
                 .SetField(x => x.President, 1)
                 .SetField(x => x.WikipediaEntry, 2)
@@ -48,8 +53,9 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Galaxy_Elements_Test()
         {
-            var galaxyElementsMap = new CsvManager<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", new CsvMapperConfiguration()
+            var galaxyElementsMap = new CsvManager<GalaxyElement>(new CsvMapperConfiguration()
             {
+                FilePath = "c:\\tempdev\\sloangalaxy.csv",
                 AutoSet = true
             });
 
@@ -66,7 +72,6 @@ namespace CsvMapper.Tests
                     file.WriteLine(galaxyElement.ObjectId);
                 }
             }
-
            
             //Console.Write(result.Count());
             Assert.IsNotNull(result);
@@ -76,9 +81,9 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Galaxy_Elements_Test_Print_First_Ten_Records()
         {
-            //var galaxyElementsMap = new CsvMap<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", true, ',', true);
-            var galaxyElementsMap = new CsvManager<GalaxyElement>("c:\\tempdev\\sloangalaxy.csv", new CsvMapperConfiguration()
+            var galaxyElementsMap = new CsvManager<GalaxyElement>(new CsvMapperConfiguration()
             {
+                FilePath = "c:\\tempdev\\sloangalaxy.csv",
                 AutoSet = true
             });
 
@@ -86,13 +91,11 @@ namespace CsvMapper.Tests
                 .SetField(x => x.Right_Ascension, 1);
 
             var result = galaxyElementsMap.Load();
-
             
             foreach (var galaxyElement in result.Take(1000))
             {
                 Console.WriteLine(galaxyElement.ObjectId);
             }
-
 
             //Console.Write(result.Count());
             Assert.IsNotNull(result);
@@ -102,8 +105,9 @@ namespace CsvMapper.Tests
         [Test]
         public void Load_Customer_Test_No_Autoset()
         {
-            var customersManager = new CsvManager<Customer>(_customersfullFilePath, new CsvMapperConfiguration()
+            var customersManager = new CsvManager<Customer>(new CsvMapperConfiguration()
             {
+                FilePath = "c:\\tempdev\\sloangalaxy.csv",
                 AutoSet = true
             });
 

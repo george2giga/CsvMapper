@@ -18,9 +18,5 @@ namespace CsvMapper.Tests
         public double Red { get; set; }
         public double Infrared { get; set; }
         public double Z { get; set; }
-        public string GetCom()
-        {
-            return string.Empty;
-        }
     }
 }

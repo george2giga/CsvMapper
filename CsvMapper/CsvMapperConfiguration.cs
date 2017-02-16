@@ -11,6 +11,7 @@ namespace CsvMapper
         public bool AutoSet { get; set; }
         public bool FirstLineHeader { get; set; }
         public char Separator { get; set; }
+        public string FilePath { get; set; }
 
         public CsvMapperConfiguration()
         {
